@@ -22,17 +22,18 @@ public class OrderDetail {
     @Column(name = "id")
     private int id;
 
-    @Column(name = "quantity")
-    private int quantity;
+    @Column(name = "total_price")
+    private double totalPrice;
 
-    @ManyToOne
-    @JoinColumn(name = "product_suppliers_id")
-   // @JsonIgnoreProperties("orderDetail")
-    @JsonIgnore
-    private ProductSuppliers productSuppliers;
+
 
     @OneToMany(mappedBy = "orderDetail")
   //  @JsonIgnoreProperties("orderDetail")
     @JsonIgnore
     private List<Order> orders;
+
+    @OneToOne
+    @JoinColumn(name = "product_supplier_cart_id")
+    @JsonIgnore
+    private ProductSupplierCart productSupplierCart;
 }

@@ -1,57 +1,62 @@
 package com.etiya.ecommercedemo4.business.concretes;
 
 import com.etiya.ecommercedemo4.business.abstracts.ICityService;
+import com.etiya.ecommercedemo4.business.abstracts.ICountryService;
+import com.etiya.ecommercedemo4.business.constants.Messages;
 import com.etiya.ecommercedemo4.business.dtos.request.city.AddCityRequest;
-import com.etiya.ecommercedemo4.business.dtos.response.city.AddCityResponse;
 import com.etiya.ecommercedemo4.business.dtos.response.city.GetAllCitiesResponse;
+import com.etiya.ecommercedemo4.core.util.mapping.ModelMapperService;
+import com.etiya.ecommercedemo4.core.util.messages.IMessagesService;
+import com.etiya.ecommercedemo4.core.util.results.DataResult;
+import com.etiya.ecommercedemo4.core.util.results.Result;
+import com.etiya.ecommercedemo4.core.util.results.SuccessDataResult;
+import com.etiya.ecommercedemo4.core.util.results.SuccessResult;
 import com.etiya.ecommercedemo4.entities.concretes.City;
 import com.etiya.ecommercedemo4.repository.ICityRepository;
-import com.etiya.ecommercedemo4.repository.ICountryRepository;
+import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@AllArgsConstructor
 @Service
 public class CityManager implements ICityService {
 
     private ICityRepository cityRepository;
-    private ICountryRepository countryRepository;
+    private ICountryService countryService;
+    private ModelMapperService modelMapperService;
+    private IMessagesService messagesService;
 
-    public CityManager(ICityRepository cityRepository,ICountryRepository countryRepository) {
-        this.cityRepository = cityRepository;
-        this.countryRepository = countryRepository;
+
+    @Override
+    public DataResult<List<City>> getAll() {
+        List<City> response = this.cityRepository.findAll();
+        return new SuccessDataResult<List<City>>(response,messagesService.getMessage(Messages.SuccessMessages.ListAll));
     }
 
     @Override
-    public List<City> getAll() {
-        return this.cityRepository.findAll();
+    public DataResult<City> getById(int id) {
+        City response = this.cityRepository.findById(id).orElseThrow();
+        return new SuccessDataResult<City>(response,messagesService.getMessage( Messages.SuccessMessages.ListById));
     }
 
     @Override
-    public City getById(int id) {
-        return this.cityRepository.findById(id).orElseThrow();
+    public Result add(AddCityRequest addCityRequest) {
+
+        City city = this.modelMapperService.forRequest().map(addCityRequest,City.class);
+        city.setId(0);
+        this.cityRepository.save(city);
+
+        return new SuccessResult(messagesService.getMessage(Messages.SuccessMessages.Add));
+
+
     }
 
     @Override
-    public AddCityResponse add(AddCityRequest addCityRequest) {
-
-        City city = new City();
-        city.setName(addCityRequest.getName());
-        city.setCountry(this.countryRepository.findById(addCityRequest.getCountryId()).orElseThrow());
-
-
-        City savedCity = this.cityRepository.save(city);
-        AddCityResponse response = new AddCityResponse();
-        response.setId(savedCity.getId());
-        response.setName(savedCity.getName());
-        response.setCountryName(savedCity.getCountry().getName());
-
-        return response;
-    }
-
-    @Override
-    public List<GetAllCitiesResponse> getAllResponsePattern() {
+    public DataResult<List<GetAllCitiesResponse>> getAllResponsePattern() {
         List<City> cities = this.cityRepository.findAll();
         List<GetAllCitiesResponse> responseList = new ArrayList<>();
 
@@ -63,6 +68,17 @@ public class CityManager implements ICityService {
             responseList.add(response);
         }
 
-        return responseList;
+        return new SuccessDataResult<List<GetAllCitiesResponse>>(responseList,messagesService.getMessage( Messages.SuccessMessages.ListAll));
+    }
+
+    @Override
+    public Page<City> getAllWithPagination(Pageable pageable) {
+        return this.cityRepository.findAll(pageable);
+    }
+
+    @Override
+    public DataResult<List<GetAllCitiesResponse>> getAllDto() {
+        List<GetAllCitiesResponse> response = this.cityRepository.getAllDto();
+        return new SuccessDataResult<List<GetAllCitiesResponse>>(response,messagesService.getMessage(Messages.SuccessMessages.Succeeded));
     }
 }

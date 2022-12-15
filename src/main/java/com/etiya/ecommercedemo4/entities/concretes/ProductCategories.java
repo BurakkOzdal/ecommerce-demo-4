@@ -13,7 +13,6 @@ import javax.persistence.*;
 @Table(name = "product_categories")
 public class ProductCategories {
 
-
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)

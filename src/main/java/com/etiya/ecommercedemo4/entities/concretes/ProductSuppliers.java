@@ -36,7 +36,6 @@ public class ProductSuppliers {
     private Supplier supplier;
 
     @OneToMany(mappedBy = "productSuppliers")
-  //  @JsonIgnoreProperties("productSuppliers")
     @JsonIgnore
-    private List<OrderDetail> orderDetails;
+    private List<ProductSupplierCart> productSupplierCarts;
 }

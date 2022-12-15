@@ -1,10 +1,17 @@
 package com.etiya.ecommercedemo4.api.controllers;
 
 import com.etiya.ecommercedemo4.business.abstracts.IAddressTypeService;
+import com.etiya.ecommercedemo4.business.constants.Paths;
 import com.etiya.ecommercedemo4.business.dtos.request.addressType.AddAddressTypeRequest;
-import com.etiya.ecommercedemo4.business.dtos.response.address.AddAddressTypeResponse;
+import com.etiya.ecommercedemo4.business.dtos.response.addressType.AddAddressTypeResponse;
+import com.etiya.ecommercedemo4.core.util.results.DataResult;
+import com.etiya.ecommercedemo4.core.util.results.Result;
+import com.etiya.ecommercedemo4.entities.concretes.Address;
 import com.etiya.ecommercedemo4.entities.concretes.AddressType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/get/addresstypes")
+@RequestMapping(Paths.apiPrefix +"addresstypes")
 public class AddressTypesController {
     private IAddressTypeService addressTypeService;
 
@@ -22,20 +29,24 @@ public class AddressTypesController {
     }
 
     @GetMapping("/getall")
-    public List<AddressType> getAll(){
+    public DataResult<List<AddressType>> getAll(){
         return this.addressTypeService.getAll();
     }
 
     @GetMapping("{id}")
-    public AddressType getById(@PathVariable int id){
+    public DataResult<AddressType> getById(@PathVariable int id){
         return this.addressTypeService.getById(id);
     }
 
     @PostMapping("/add")
-    public ResponseEntity<AddAddressTypeResponse> add(@RequestBody AddAddressTypeRequest addAddressTypeRequest){
-        return new ResponseEntity<AddAddressTypeResponse>(this.addressTypeService.add(addAddressTypeRequest),
+    public ResponseEntity<Result> add(@RequestBody AddAddressTypeRequest addAddressTypeRequest){
+        return new ResponseEntity<Result>(this.addressTypeService.add(addAddressTypeRequest),
                 HttpStatus.CREATED);
     }
 
-
+    @GetMapping("/getAllWithPagination")
+    public Page<AddressType> getAllWithPagination(@RequestParam("page") int page, @RequestParam("pageSize") int pageSize){
+        Pageable pageable = PageRequest.of(page,pageSize);
+        return this.addressTypeService.getAllWithPagination(pageable);
+    }
 }

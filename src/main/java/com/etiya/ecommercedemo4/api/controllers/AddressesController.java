@@ -1,17 +1,25 @@
 package com.etiya.ecommercedemo4.api.controllers;
 
 import com.etiya.ecommercedemo4.business.abstracts.IAddressService;
+import com.etiya.ecommercedemo4.business.constants.Paths;
+import com.etiya.ecommercedemo4.business.dtos.request.address.AddAddressRequest;
+import com.etiya.ecommercedemo4.business.dtos.response.address.AddAddressResponse;
+import com.etiya.ecommercedemo4.business.dtos.response.address.GetAddressDto;
+import com.etiya.ecommercedemo4.core.util.results.DataResult;
+import com.etiya.ecommercedemo4.core.util.results.Result;
 import com.etiya.ecommercedemo4.entities.concretes.Address;
+import com.etiya.ecommercedemo4.entities.concretes.Country;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/addresses")
+@RequestMapping(Paths.apiPrefix + "addresses")
 public class AddressesController {
 
     private IAddressService addressService;
@@ -22,17 +30,42 @@ public class AddressesController {
     }
 
     @GetMapping("/getAll")
-    public List<Address> getAll(){
+    public DataResult<List<Address>> getAll(){
         return this.addressService.getAll();
     }
 
     @GetMapping("{id}")
-    public Address getById(@PathVariable int id){
+    public DataResult<Address> getById(@PathVariable int id){
         return this.addressService.getById(id);
     }
 
     @GetMapping("/getByAdressType")
-    public List<Address> getByAddressType(){
+    public DataResult<List<Address>> getByAddressType(){
         return this.addressService.getByAddressType();
     }
+
+    @PostMapping("/add")
+    public Result add(@RequestBody @Valid AddAddressRequest addAddressRequest){
+        return this.addressService.add(addAddressRequest);
+    }
+
+    @RequestMapping(value = "/getAddressDto/{id}", method = RequestMethod.GET)
+    public DataResult<GetAddressDto> getAddressDto(@PathVariable int id){
+        return this.addressService.getAddressDto(id);
+    }
+
+    @GetMapping("/getAllWithPagination")
+    public Page<Address> getAllWithPagination(@RequestParam("page") int page, @RequestParam("pageSize") int pageSize){
+        Pageable pageable = PageRequest.of(page,pageSize);
+        return  this.addressService.getAllWithPagination(pageable);
+    }
+
+
+
+ /*   @RequestMapping(value = "/id/{id}", method = RequestMethod.GET)
+    public Country getCountryWithCityId(@PathVariable int id){
+        return this.addressService.getCountryByCityId(id);
+    }
+
+  */
 }

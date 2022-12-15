@@ -12,7 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "users")
-
+@Inheritance(strategy = InheritanceType.JOINED)
 public class User {
 
     @Id
@@ -26,25 +26,13 @@ public class User {
     @Column(name = "email")
     private String email;
 
-    @OneToMany(mappedBy = "user")
-   // @JsonIgnoreProperties("user")
-    @JsonIgnore
-    private List<Supplier> suppliers;
-
-    @OneToMany(mappedBy = "user")
-   // @JsonIgnoreProperties("user")
-    @JsonIgnore
-    private List<Customer> customers;
 
     @OneToMany(mappedBy = "user")
    // @JsonIgnoreProperties("user")
     @JsonIgnore
     private List<Payment> payments;
 
-    @OneToMany(mappedBy = "user")
-   // @JsonIgnoreProperties("user")
-    @JsonIgnore
-    private List<Cart> carts;
+
 
     @OneToMany(mappedBy = "user")
    // @JsonIgnoreProperties("user")

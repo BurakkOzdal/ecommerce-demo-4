@@ -1,18 +1,26 @@
 package com.etiya.ecommercedemo4.api.controllers;
 
 import com.etiya.ecommercedemo4.business.abstracts.IProductService;
+import com.etiya.ecommercedemo4.business.constants.Paths;
 import com.etiya.ecommercedemo4.business.dtos.request.product.AddProductRequest;
 import com.etiya.ecommercedemo4.business.dtos.response.product.AddProductResponse;
+import com.etiya.ecommercedemo4.core.util.results.DataResult;
+import com.etiya.ecommercedemo4.core.util.results.Result;
 import com.etiya.ecommercedemo4.entities.concretes.Product;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/products")
+@RequestMapping(Paths.apiPrefix +"products")
 public class ProductsController {
 
 
@@ -24,31 +32,43 @@ public class ProductsController {
     }
 
     @GetMapping("/getAll")
-    public List<Product> getAll(){
+    public DataResult<List<Product>> getAll(){
         return this.productService.getAll();
     }
 
     @GetMapping("{id}")
-    public Product getById(@PathVariable int id){ return  this.productService.getById(id);}
+    public DataResult<Product> getById(@PathVariable int id){ return  this.productService.getById(id);}
 
     @GetMapping("/getAllByStock")
-    public List<Product> getAllByStock(@RequestParam("stock") int stock){
+    public DataResult<List<Product>> getAllByStock(@RequestParam("stock") int stock){
         return this.productService.getAllByStock(stock);
     }
 
     @GetMapping("/getByName")
-    public Product getAllByStock(@RequestParam("name") String name){
+    public DataResult<Product> getAllByStock(@RequestParam("name") String name){
         return this.productService.getByName(name);
     }
 
     @GetMapping("/getAllProductsBetween")
-    public List<Product> getAllProductsBetween(double start,double end){
+    public DataResult<List<Product>> getAllProductsBetween(double start,double end){
         return this.productService.getAllProductsUnitPriceBetween(start, end);
     }
 
     @PostMapping("/add")
-    public ResponseEntity<AddProductResponse> add(@RequestBody AddProductRequest addProductRequest){
-        return  new ResponseEntity<>(this.productService.add(addProductRequest), HttpStatus.CREATED);
+    public ResponseEntity<Result> add(@RequestBody @Valid AddProductRequest addProductRequest){
+        return  new ResponseEntity<Result>(this.productService.add(addProductRequest), HttpStatus.CREATED);
+    }
+
+    @GetMapping("/getWithPagination")
+    public Page<Product> getWithPagination(@RequestParam("page") int page, @RequestParam("pageSize") int pageSize){
+        Pageable pageable = PageRequest.of(page,pageSize);
+        return this.productService.findAllWithPagination(pageable);
+    }
+
+    @GetMapping("/getWithSlice")
+    public Slice<Product> getWithSlice(@RequestParam("page") int page, @RequestParam("pageSize") int pageSize){
+        Pageable pageable = PageRequest.of(page,pageSize);
+        return this.productService.getAllWithSlice(pageable);
     }
 
 }

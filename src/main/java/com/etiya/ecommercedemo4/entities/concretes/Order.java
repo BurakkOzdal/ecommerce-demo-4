@@ -37,4 +37,9 @@ public class Order {
     //@JsonIgnoreProperties("order")
     @JsonIgnore
     private OrderDetail orderDetail;
+
+    @OneToOne(mappedBy = "order")
+    @JsonIgnore
+    private Invoice invoice;
+
 }

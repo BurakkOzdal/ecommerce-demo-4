@@ -13,12 +13,10 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "customers")
-public class Customer {
+@EqualsAndHashCode(callSuper = false)
+@PrimaryKeyJoinColumn(name = "id")
+public class Customer extends User{
 
-    @Id
-    @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
 
     @Column(name = "customer_number")
     private String customerNumber;
@@ -26,10 +24,8 @@ public class Customer {
     @Column(name = "birth_date")
     private Date birthDate;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-   // @JsonIgnoreProperties("customer")
+    @OneToOne(mappedBy = "customer")
     @JsonIgnore
-    private User user;
+    private Cart cart;
 
 }

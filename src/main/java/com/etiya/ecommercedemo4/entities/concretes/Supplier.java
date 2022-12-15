@@ -12,22 +12,14 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "suppliers")
-public class Supplier {
+@EqualsAndHashCode(callSuper = false)
+@PrimaryKeyJoinColumn(name = "id")
+public class Supplier extends User{
 
-    @Id
-    @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
 
     @Column(name = "supplier_number")
     private String supplierNumber;
 
-
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-   // @JsonIgnoreProperties("supplier")
-    @JsonIgnore
-    private User user;
 
     @OneToMany(mappedBy = "supplier")
    // @JsonIgnoreProperties("supplier")

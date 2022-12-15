@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Getter
@@ -22,12 +23,18 @@ public class Cart {
     @Column(name = "id")
     private int id;
 
-    @Column(name = "total_price")
-    private double totalPrice;
+    @Column(name = "quantity")
+    private int quantity;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
+    @OneToOne
+    @JoinColumn(name = "customer_id")
    // @JsonIgnoreProperties("cart")
     @JsonIgnore
-    private User user;
+    private Customer customer;
+
+    @OneToMany(mappedBy = "cart")
+    @JsonIgnore
+    private List<ProductSupplierCart> productSupplierCarts;
+
+
 }

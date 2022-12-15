@@ -1,4 +1,4 @@
-package com.etiya.ecommercedemo4.business.dtos.response.address;
+package com.etiya.ecommercedemo4.business.dtos.response.addressType;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -1,19 +1,28 @@
 package com.etiya.ecommercedemo4.api.controllers;
 
 import com.etiya.ecommercedemo4.business.abstracts.ICategoryService;
+import com.etiya.ecommercedemo4.business.constants.Paths;
 import com.etiya.ecommercedemo4.business.dtos.request.category.AddCategoryRequest;
 import com.etiya.ecommercedemo4.business.dtos.response.category.AddCategoryResponse;
-import com.etiya.ecommercedemo4.business.dtos.response.category.GetAllCategoriesWithProductResponse;
+import com.etiya.ecommercedemo4.business.dtos.response.category.GetCategoryByIdWithProductsResponse;
+import com.etiya.ecommercedemo4.core.util.results.DataResult;
+import com.etiya.ecommercedemo4.core.util.results.Result;
+import com.etiya.ecommercedemo4.entities.concretes.Address;
 import com.etiya.ecommercedemo4.entities.concretes.Category;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+import javax.xml.crypto.Data;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/categories")
+@RequestMapping(Paths.apiPrefix +"categories")
 public class CategoriesController {
 
     private ICategoryService categoryService;
@@ -24,28 +33,27 @@ public class CategoriesController {
     }
 
     @GetMapping("/getAll")
-    public List<Category> getAll(){
+    public DataResult<List<Category>> getAll(){
         return this.categoryService.getAll();
     }
 
-    @GetMapping("{id}")
-    public Category getById(@PathVariable int id){
+    @RequestMapping(value = "/getById/{id}", method = RequestMethod.GET)
+    public DataResult<Category> getById(@PathVariable int id){
         return this.categoryService.getById(id);
     }
 
     @PostMapping("/add")
-    public ResponseEntity<AddCategoryResponse> add(AddCategoryRequest addCategoryRequest){
-        return new ResponseEntity<AddCategoryResponse>(this.categoryService.add(addCategoryRequest),
+    public ResponseEntity<Result> add(@RequestBody @Valid AddCategoryRequest addCategoryRequest){
+        return new ResponseEntity<Result>(this.categoryService.add(addCategoryRequest),
                 HttpStatus.CREATED);
     }
-
-    @RequestMapping(value = "/id/{id}", method = RequestMethod.GET)
-    public List<Category> denemeEndPoint(@PathVariable int id){
-        return this.categoryService.denemeEndPoint(id);
+    @RequestMapping(value = "/getAllDto/{id}", method = RequestMethod.GET)
+    public DataResult<List<GetCategoryByIdWithProductsResponse>> getAllDto(@PathVariable int id){
+        return this.categoryService.getAllDto(id);
     }
-
-    @RequestMapping(value = "/id2/{id}", method = RequestMethod.GET)
-    public List<GetAllCategoriesWithProductResponse> denemeEndPoint2(@PathVariable int id){
-        return this.categoryService.denemeEndPoint2(id);
+    @GetMapping("/getAllWithPagination")
+    public Page<Category> getAllWithPagination(@RequestParam("page") int page, @RequestParam("pageSize") int pageSize){
+        Pageable pageable = PageRequest.of(page,pageSize);
+        return  this.categoryService.getAllWithPagination(pageable);
     }
 }
